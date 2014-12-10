@@ -1,0 +1,1 @@
+docker run -p 80:80 -p 443:443 -v `pwd`/mysql:/var/lib/mysql -v `pwd`/data:/var/www/data -v `pwd`:/docker -w /docker --rm -i -t owncloud /bin/bash
