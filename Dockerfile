@@ -33,9 +33,7 @@ RUN apt-get install -y php5-fpm
 RUN sed -i "s|;cgi.fix_pathinfo=1|cgi.fix_pathinfo=0|" /etc/php5/fpm/php.ini
 
 #OpenOffice
-RUN curl -L sourceforge.net/projects/openofficeorg.mirror/files/4.1.1/binaries/en-GB/Apache_OpenOffice_4.1.1_Linux_x86-64_install-deb_en-GB.tar.gz | tar zx && \
-    dpkg -i en-GB/DEBS/*.deb && \
-    rm -rf en-GB
+RUN apt-get install -y --no-install-recommends libreoffice-writer
 
 #OwnCloud
 RUN curl https://download.owncloud.org/community/owncloud-7.0.4.tar.bz2 | tar xj 
