@@ -9,13 +9,6 @@ ENV LANG en_US.UTF-8
 RUN apt-get install -y runit 
 CMD /usr/sbin/runsvdir-start
 
-#SSHD
-RUN apt-get install -y openssh-server && \
-    mkdir -p /var/run/sshd && \
-    echo 'root:root' |chpasswd
-RUN sed -i "s/session.*required.*pam_loginuid.so/#session    required     pam_loginuid.so/" /etc/pam.d/sshd
-RUN sed -i "s/PermitRootLogin without-password/#PermitRootLogin without-password/" /etc/ssh/sshd_config
-
 #Utilities
 RUN apt-get install -y vim less net-tools inetutils-ping wget curl git telnet nmap socat dnsutils netcat tree htop unzip sudo software-properties-common
 
@@ -31,6 +24,11 @@ RUN apt-get install -y php5-gd php5-json php5-mysql php5-curl
 RUN apt-get install -y php5-intl php5-mcrypt php5-imagick
 RUN apt-get install -y php5-fpm
 RUN sed -i "s|;cgi.fix_pathinfo=1|cgi.fix_pathinfo=0|" /etc/php5/fpm/php.ini
+RUN sed -i "s|upload_max_filesize = 2M|upload_max_filesize = 16G|" /etc/php5/fpm/php.ini
+RUN sed -i "s|post_max_size = 8M|post_max_size = 16G|" /etc/php5/fpm/php.ini
+RUN sed -i "s|output_buffering = 4096|output_buffering = Off|" /etc/php5/fpm/php.ini
+RUN sed -i "s|memory_limit = 128M|memory_limit = 512M|" /etc/php5/fpm/php.ini
+RUN sed -i "s|;pm.max_requests = 500|pm.max_requests = 500|" /etc/php5/fpm/pool.d/www.conf
 
 #OpenOffice
 RUN apt-get install -y --no-install-recommends libreoffice-writer
@@ -49,8 +47,12 @@ RUN mkdir -p /etc/nginx/ssl && \
     openssl rsa -in server.key -out server.key -passin env:PASSPHRASE && \
     openssl x509 -req -days 3650 -in server.csr -signkey server.key -out server.crt
 
+#Nginx Config
 ADD default /etc/nginx/sites-enabled/ 
+
+#Owncloud Config
 RUN mkdir -p /var/www/config
 ADD autoconfig.php /var/www/config/
+
 #Add runit services
 ADD sv /etc/service 
